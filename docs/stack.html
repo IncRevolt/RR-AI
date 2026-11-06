@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The RR AI Stack</title>
+<meta name="description" content="Every model in the Renewable Revolt private AI stack, and which machine runs it — all local, all offline.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#07080c;--surface:#0e0f16;--surface2:#141620;--border:#1e2035;
+  --purple:#8b5cf6;--royal:#7c3aed;--plum:#a855f7;
+  --green:#00e676;--cyan:#00E5FF;--amber:#ffab00;--red:#ff4444;
+  --text:#e8edf2;--muted:#ccd8e4;--dim:#8a9ab8;
+  --sans:'DM Sans',system-ui,sans-serif;--mono:'Space Mono',ui-monospace,monospace;--disp:'Syne',var(--sans);
+  /* machine accents */
+  --cl:#3ce0a6;--mar:#c7b2ff;--whi:#5fd6ef;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--black);color:var(--text);font-family:var(--sans);line-height:1.6;overflow-x:hidden;
+  background:
+    radial-gradient(120% 80% at 85% -10%,rgba(139,92,246,.10),transparent 55%),
+    radial-gradient(90% 60% at 0% 0%,rgba(0,229,255,.06),transparent 50%),
+    var(--black)}
+.wrap{max-width:1040px;margin:0 auto;padding:clamp(1.5rem,4vw,3rem) clamp(1rem,4vw,2rem) 3rem}
+
+/* header */
+.brand{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--border);padding-bottom:1rem;flex-wrap:wrap}
+.logo{font-family:var(--disp);font-size:1.05rem;font-weight:800;letter-spacing:.05em;color:var(--text);text-decoration:none}
+.logo span{color:var(--purple)}
+.tagpill{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);border:1px solid rgba(0,229,255,.4);padding:.35rem .7rem;border-radius:20px}
+
+/* hero */
+.hero{padding:2rem 0 1.5rem}
+.kick{font-family:var(--mono);font-size:.62rem;color:var(--purple);text-transform:uppercase;letter-spacing:.2em;margin-bottom:.8rem}
+h1{font-family:var(--disp);font-size:clamp(1.9rem,5vw,3.1rem);font-weight:800;line-height:1.06;letter-spacing:-.02em;margin-bottom:1rem}
+h1 span{color:var(--purple)}
+.sub{font-size:clamp(.95rem,1.6vw,1.08rem);color:var(--muted);max-width:640px;line-height:1.7}
+
+/* matrix */
+.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:2rem;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,var(--surface),rgba(14,15,22,.4))}
+.matrix{min-width:620px;width:100%}
+.mrow{display:grid;grid-template-columns:minmax(230px,2.5fr) repeat(3,minmax(104px,1fr));align-items:stretch}
+.mrow+.mrow{border-top:1px solid var(--border)}
+
+/* machine column heads */
+.head{position:sticky;top:0;z-index:2}
+.head .cnr{background:var(--surface2);padding:1rem 1.1rem;display:flex;align-items:flex-end}
+.head .cnr .lab{font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.mcol{padding:.95rem .7rem 1rem;text-align:center;background:var(--surface2);border-left:1px solid var(--border);position:relative;overflow:hidden}
+.mcol::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--acc)}
+.mcol .nm{font-family:var(--disp);font-weight:800;font-size:1.02rem;color:var(--acc);line-height:1.1}
+.mcol .gpu{font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-top:.35rem;letter-spacing:.03em}
+.mcol .vram{font-family:var(--mono);font-size:.56rem;color:var(--dim);margin-top:.15rem}
+.mcol .tier{font-size:.6rem;color:var(--acc);margin-top:.5rem;font-weight:600;letter-spacing:.02em;opacity:.9}
+
+/* group band */
+.band{grid-column:1 / -1;background:rgba(124,58,237,.08);border-top:1px solid var(--border);padding:.5rem 1.1rem;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--purple)}
+.band.img{background:rgba(0,229,255,.06);color:var(--cyan)}
+
+/* model banner (link) */
+.model{display:block;padding:.85rem 1.1rem;text-decoration:none;color:inherit;border-left:3px solid var(--purple);
+  transition:background .18s,border-color .18s;position:relative}
+.model.img{border-left-color:var(--cyan)}
+.model:hover{background:rgba(139,92,246,.07)}
+.model.img:hover{background:rgba(0,229,255,.06)}
+.model .mn{font-family:var(--disp);font-weight:700;font-size:1rem;color:var(--text);display:flex;align-items:center;gap:.5rem}
+.model .mn .arw{font-family:var(--sans);font-size:.8rem;color:var(--purple);opacity:0;transform:translateX(-3px);transition:.18s}
+.model.img .mn .arw{color:var(--cyan)}
+.model:hover .mn .arw{opacity:1;transform:translateX(0)}
+.model .tag{font-family:var(--mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:.25rem}
+.model .desc{font-size:.84rem;color:var(--muted);margin-top:.25rem;line-height:1.45}
+
+/* availability cells */
+.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;border-left:1px solid var(--border);padding:.6rem .4rem;text-align:center}
+.cell .dot{width:17px;height:17px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 18%,transparent);display:flex;align-items:center;justify-content:center}
+.cell .dot svg{width:10px;height:10px;display:block}
+.cell .no{color:#3a4056;font-size:1rem;line-height:1}
+.cell .size{font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--acc);letter-spacing:.02em}
+.cell .note{font-family:var(--mono);font-size:.5rem;color:var(--dim);letter-spacing:.04em}
+
+/* count payoff row */
+.count .cnr{background:var(--surface2);padding:.9rem 1.1rem;display:flex;align-items:center;font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.count .c{background:var(--surface2);border-left:1px solid var(--border);text-align:center;padding:.8rem .4rem}
+.count .c .big{font-family:var(--disp);font-weight:800;font-size:1.7rem;color:var(--acc);line-height:1}
+.count .c .lab{font-family:var(--mono);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:.2rem}
+
+/* legend + foot */
+.legend{display:flex;gap:1.3rem;flex-wrap:wrap;margin-top:1.1rem;font-family:var(--mono);font-size:.62rem;color:var(--dim);letter-spacing:.04em}
+.legend b{color:var(--muted);font-weight:400}
+.legend .ld{display:inline-flex;align-items:center;gap:.4rem}
+.legend .d{width:11px;height:11px;border-radius:50%;background:var(--muted)}
+.hint{font-family:var(--mono);font-size:.58rem;color:var(--dim);margin-top:.5rem;letter-spacing:.03em}
+.foot{margin-top:2rem;border-top:1px solid var(--border);padding-top:1rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  font-family:var(--mono);font-size:.6rem;color:var(--dim);letter-spacing:.06em}
+.foot .c{color:var(--cyan)}
+.privacy{margin-top:1.3rem;background:var(--surface);border-left:3px solid var(--green);border-radius:0 6px 6px 0;padding:.9rem 1.2rem}
+.privacy p{font-size:.86rem;color:var(--muted);line-height:1.6}
+.privacy b{color:var(--text)}
+@media (max-width:560px){ .hint::after{content:" — swipe the table sideways to see every machine."} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <a class="logo" href="#">RENEWABLE <span>REVOLT</span></a>
+    <span class="tagpill">Private&nbsp;&middot;&nbsp;Offline&nbsp;&middot;&nbsp;No&nbsp;Subscriptions</span>
+  </div>
+
+  <div class="hero">
+    <p class="kick">The AI Stack</p>
+    <h1>Not just &ldquo;we have AI.&rdquo;<br><span>Here&rsquo;s exactly what runs where.</span></h1>
+    <p class="sub">Every Renewable Revolt machine ships with a real, private AI stack &mdash; chat, vision, coding, and image generation &mdash; running entirely on the machine, with nothing sent to the cloud.&nbsp; The bigger the machine, the more it runs.&nbsp; Tap any model to learn more.</p>
+  </div>
+
+  <div class="scroller">
+    <div class="matrix">
+
+      <!-- MACHINE HEADERS -->
+      <div class="mrow head">
+        <div class="cnr"><span class="lab">Model&nbsp; &darr; &nbsp;/&nbsp; Machine&nbsp; &rarr;</span></div>
+        <div class="mcol" style="--acc:var(--cl)">
+          <div class="nm">CL Gamer</div><div class="gpu">GTX 1060 &middot; 6GB</div><div class="vram">NVIDIA</div>
+          <div class="tier">Capable local AI</div>
+        </div>
+        <div class="mcol" style="--acc:var(--mar)">
+          <div class="nm">Marauder</div><div class="gpu">GTX 1070 &middot; 8GB</div><div class="vram">NVIDIA</div>
+          <div class="tier">Enterprise-grade AI</div>
+        </div>
+        <div class="mcol" style="--acc:var(--whi)">
+          <div class="nm">Whiteout</div><div class="gpu">RX 6700 XT &middot; 12GB</div><div class="vram">AMD</div>
+          <div class="tier">Full enterprise AI</div>
+        </div>
+      </div>
+
+      <!-- TEXT & VISION -->
+      <div class="mrow"><div class="band">Text &amp; Vision</div></div>
+
+      <div class="mrow">
+        <a class="model" href="https://prismml.com" target="_blank" rel="noopener">
+          <div class="mn">Bonsai 8B <span class="arw">&rarr;</span></div>
+          <div class="tag">Chat</div>
+          <div class="desc">Fast, private everyday assistant &mdash; the quick one.</div>
+        </a>
+        <div class="cell" style="--acc:var(--cl)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="cell" style="--acc:var(--mar)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="cell" style="--acc:var(--whi)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+
+      <div class="mrow">
+        <a class="model" href="https://prismml.com/news/bonsai-27b" target="_blank" rel="noopener">
+          <div class="mn">Bonsai 2 27B <span class="arw">&rarr;</span></div>
+          <div class="tag">Chat + Vision</div>
+          <div class="desc">Flagship assistant &mdash; reads your photos &amp; documents.</div>
+        </a>
+        <div class="cell" style="--acc:var(--cl)"><span class="no">&ndash;</span></div>
+        <div class="cell" style="--acc:var(--mar)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="cell" style="--acc:var(--whi)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+
+      <div class="mrow">
+        <a class="model" href="https://github.com/QwenLM/Qwen2.5-Coder" target="_blank" rel="noopener">
+          <div class="mn">Qwen2.5-Coder <span class="arw">&rarr;</span></div>
+          <div class="tag">Code</div>
+          <div class="desc">Writes, fixes &amp; explains code &mdash; a private pair-programmer.</div>
+        </a>
+        <div class="cell" style="--acc:var(--cl)"><span class="no">&ndash;</span></div>
+        <div class="cell" style="--acc:var(--mar)"><span class="size">7B</span><span class="note">model</span></div>
+        <div class="cell" style="--acc:var(--whi)"><span class="size">14B</span><span class="note">larger</span></div>
+      </div>
+
+      <!-- IMAGE -->
+      <div class="mrow"><div class="band img">Image Generation</div></div>
+
+      <div class="mrow">
+        <a class="model img" href="https://civitai.com/models/4384" target="_blank" rel="noopener">
+          <div class="mn">DreamShaper 8 <span class="arw">&rarr;</span></div>
+          <div class="tag">Image &middot; SD 1.5</div>
+          <div class="desc">Versatile all-rounder &mdash; fast, great for most ideas.</div>
+        </a>
+        <div class="cell" style="--acc:var(--cl)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="cell" style="--acc:var(--mar)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="cell" style="--acc:var(--whi)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+
+      <div class="mrow">
+        <a class="model img" href="https://civitai.com/models/4201" target="_blank" rel="noopener">
+          <div class="mn">Realistic Vision <span class="arw">&rarr;</span></div>
+          <div class="tag">Image &middot; SD 1.5</div>
+          <div class="desc">Photo-realistic people, places &amp; products.</div>
+        </a>
+        <div class="cell" style="--acc:var(--cl)"><span class="no">&ndash;</span></div>
+        <div class="cell" style="--acc:var(--mar)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="cell" style="--acc:var(--whi)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+
+      <div class="mrow">
+        <a class="model img" href="https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0" target="_blank" rel="noopener">
+          <div class="mn">SDXL base <span class="arw">&rarr;</span></div>
+          <div class="tag">Image &middot; SDXL</div>
+          <div class="desc">High-detail, all-purpose &mdash; bigger, sharper images.</div>
+        </a>
+        <div class="cell" style="--acc:var(--cl)"><span class="no">&ndash;</span></div>
+        <div class="cell" style="--acc:var(--mar)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="cell" style="--acc:var(--whi)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+
+      <div class="mrow">
+        <a class="model img" href="https://civitai.com/models/133005" target="_blank" rel="noopener">
+          <div class="mn">Juggernaut XL <span class="arw">&rarr;</span></div>
+          <div class="tag">Image &middot; SDXL</div>
+          <div class="desc">Premium photoreal &mdash; portraits &amp; scenes with punch.</div>
+        </a>
+        <div class="cell" style="--acc:var(--cl)"><span class="no">&ndash;</span></div>
+        <div class="cell" style="--acc:var(--mar)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="cell" style="--acc:var(--whi)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+
+      <div class="mrow">
+        <a class="model img" href="https://huggingface.co/models?search=z-image%20turbo" target="_blank" rel="noopener">
+          <div class="mn">Z-Image Turbo <span class="arw">&rarr;</span></div>
+          <div class="tag">Image &middot; Premium</div>
+          <div class="desc">Top-tier quality &mdash; the best images in the lineup.</div>
+        </a>
+        <div class="cell" style="--acc:var(--cl)"><span class="no">&ndash;</span></div>
+        <div class="cell" style="--acc:var(--mar)"><span class="no">&ndash;</span></div>
+        <div class="cell" style="--acc:var(--whi)"><span class="dot"><svg viewBox="0 0 10 10"><path d="M1 5l2.5 3L9 1.5" fill="none" stroke="#07080c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+
+      <!-- COUNT PAYOFF -->
+      <div class="mrow count">
+        <div class="cnr">Models included</div>
+        <div class="c" style="--acc:var(--cl)"><div class="big">2</div><div class="lab">on CL Gamer</div></div>
+        <div class="c" style="--acc:var(--mar)"><div class="big">7</div><div class="lab">on Marauder</div></div>
+        <div class="c" style="--acc:var(--whi)"><div class="big">8</div><div class="lab">on Whiteout</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="ld"><span class="d" style="background:var(--whi)"></span><b>Included &amp; ready to run</b></span>
+    <span class="ld"><span class="no" style="color:#3a4056;font-size:1rem">&ndash;</span>&nbsp;<b>Not on this machine</b></span>
+    <span class="ld"><b>Coding cell shows the model size each machine runs.</b></span>
+  </div>
+  <p class="hint">&#9656; Every model name links to its maker&rsquo;s page.</p>
+
+  <div class="privacy">
+    <p><b>All of it runs on the machine.</b>&nbsp; No account, no subscription, no cloud &mdash; your words and images never leave the box.&nbsp; Need more than the Whiteout runs?&nbsp; Higher-VRAM builds can host even larger models.</p>
+  </div>
+
+  <div class="foot">
+    <span>Renewable Revolt, Inc. &mdash; Recover &middot; Revive &middot; Redeploy &middot; Veteran Owned &amp; Operated</span>
+    <span class="c">renewablerevolt.org</span>
+  </div>
+
+</div>
+</body>
+</html>
