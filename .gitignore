@@ -1,0 +1,20 @@
+# Model files and engine binaries NEVER go in the repo - they are large and
+# ship as Release assets (or are downloaded by the downloader script).
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.onnx
+*.exe
+*.dll
+models/
+engine/
+*.zip
+*.7z
+
+# OS + editor cruft
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
+.vscode/
